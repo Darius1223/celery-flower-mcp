@@ -1,6 +1,6 @@
 [project]
 name = "celery-flower-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "MCP server that exposes the full Celery Flower REST API — monitor workers, manage tasks, inspect queues from any AI assistant."
 readme = "README.md"
 license = { text = "MIT" }
