@@ -1,0 +1,73 @@
+[project]
+name = "celery-flower-mcp"
+version = "0.1.0"
+description = "MCP server that exposes the full Celery Flower REST API — monitor workers, manage tasks, inspect queues from any AI assistant."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.14"
+authors = [{ name = "Ildar", email = "darius.krsk@gmail.com" }]
+keywords = ["mcp", "celery", "flower", "asyncio", "ai", "llm", "model-context-protocol"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Monitoring",
+    "Framework :: AsyncIO",
+    "Typing :: Typed",
+]
+dependencies = [
+    "dishka>=0.14",
+    "httpx>=0.28.1",
+    "loguru>=0.7",
+    "mcp[cli]>=1.27.0",
+    "pydantic-settings>=2.7",
+]
+
+[project.urls]
+Homepage = "https://github.com/Darius1223/celery-flower-mcp"
+Repository = "https://github.com/Darius1223/celery-flower-mcp"
+Issues = "https://github.com/Darius1223/celery-flower-mcp/issues"
+Changelog = "https://github.com/Darius1223/celery-flower-mcp/blob/main/CHANGELOG.md"
+
+[project.scripts]
+celery-flower-mcp = "source.main:mcp.run"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.20.1",
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6",
+    "pytest-httpx>=0.35",
+    "ruff>=0.15.11",
+]
+
+# Lint configuration
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["source"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["source"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
