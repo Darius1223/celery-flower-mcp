@@ -71,10 +71,50 @@ jobs:
         run: uv sync --all-groups
 
       - name: Run tests with coverage
-        run: uv run pytest tests/ --cov=source --cov-report=xml --cov-report=term-missing
+        run: uv run pytest tests/ -m "not integration" --cov=source --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           files: coverage.xml
           fail_ci_if_error: false
+
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Start Flower stack
+        run: docker compose -f docker-compose.test.yml up -d --build
+
+      - name: Wait for Flower to be ready
+        run: |
+          echo "Waiting for Flower healthcheck..."
+          timeout 90 bash -c \
+            'until curl -sf http://localhost:5555/healthcheck; do echo "not ready, retrying..."; sleep 3; done'
+          echo "Flower is up"
+
+      - name: Run integration tests
+        env:
+          FLOWER_URL: http://localhost:5555
+        run: uv run pytest tests/integration/ -v --timeout=120
+
+      - name: Print container logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.test.yml logs
+
+      - name: Tear down
+        if: always()
+        run: docker compose -f docker-compose.test.yml down -v

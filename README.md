@@ -36,7 +36,7 @@ All 21 Flower API endpoints are covered.
 - **Dependency injection** via [dishka](https://dishka.readthedocs.io/) — clean, testable architecture
 - **Pydantic Settings** — typed configuration with `.env` file support
 - **Async** throughout — built on `httpx` + `FastMCP`
-- **99% test coverage** — 49 tests, zero flakes
+- **65 tests** — 49 unit tests (99% coverage) + 16 integration tests against real Flower
 - **Strict typing** — mypy strict mode, fully annotated
 
 ## Quick Start
@@ -149,10 +149,46 @@ source/
 make fmt        # auto-format with ruff
 make lint       # lint with ruff
 make typecheck  # type-check with mypy (strict)
-make test       # run 49 tests
-make cov        # tests + coverage report
+make test       # run 49 unit tests
+make cov        # unit tests + coverage report
 make all        # fmt + lint + typecheck
 ```
+
+### Testing
+
+The test suite is split into two layers:
+
+**Unit tests** (`tests/`) — fast, no external dependencies, use `pytest-httpx` to mock HTTP calls:
+
+```bash
+make test
+# or
+uv run pytest tests/ -m "not integration"
+```
+
+**Integration tests** (`tests/integration/`) — run against a real Flower instance backed by Redis and a live Celery worker, all managed by Docker Compose:
+
+```bash
+make integration
+```
+
+This command:
+1. Builds and starts the Docker Compose stack (`docker-compose.test.yml`) — Redis → Celery worker → Flower
+2. Waits for Flower's `/healthcheck` endpoint to return OK
+3. Runs the 16 integration tests against `http://localhost:5555`
+4. Tears down the stack when done
+
+The stack is defined in `docker-compose.test.yml`. The worker and Flower images are built from `tests/integration/Dockerfile.worker` and `tests/integration/Dockerfile.flower`.
+
+To start the stack manually for exploratory testing:
+
+```bash
+docker compose -f docker-compose.test.yml up -d --build
+# run tests, explore, etc.
+make integration-down   # stop + remove volumes
+```
+
+Integration tests use `pytest.mark.asyncio(loop_scope="session")` so all tests share one event loop — this avoids `RuntimeError: Event loop is closed` when httpx transports are cleaned up across test boundaries on Python 3.14.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details on adding new tools or submitting a PR.
 

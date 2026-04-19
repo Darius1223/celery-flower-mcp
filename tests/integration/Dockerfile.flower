@@ -1,0 +1,5 @@
+FROM python:3.12-slim
+RUN pip install --no-cache-dir celery[redis]==5.4.0 flower==2.0.1
+WORKDIR /app
+COPY celery_app.py .
+CMD ["celery", "-A", "celery_app", "flower", "--port=5555", "--unauthenticated_api=true"]

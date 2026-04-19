@@ -80,7 +80,7 @@ def register(mcp: FastMCP, client: FlowerClient) -> None:  # noqa: PLR0915
             for k, v in {"args": args, "kwargs": kwargs, "options": options}.items()
             if v is not None
         }
-        data = await client.post(f"/api/task/apply/{taskname}", data=data_dict)
+        data = await client.post(f"/api/task/apply/{taskname}", json=data_dict)
         logger.info("Applied task {}", taskname)
         return json.dumps(data)
 
@@ -97,7 +97,7 @@ def register(mcp: FastMCP, client: FlowerClient) -> None:  # noqa: PLR0915
             for k, v in {"args": args, "kwargs": kwargs, "options": options}.items()
             if v is not None
         }
-        data = await client.post(f"/api/task/async-apply/{taskname}", data=data_dict)
+        data = await client.post(f"/api/task/async-apply/{taskname}", json=data_dict)
         logger.info("Async-applied task {}", taskname)
         return json.dumps(data)
 
@@ -114,7 +114,7 @@ def register(mcp: FastMCP, client: FlowerClient) -> None:  # noqa: PLR0915
             for k, v in {"args": args, "kwargs": kwargs, "options": options}.items()
             if v is not None
         }
-        data = await client.post(f"/api/task/send-task/{taskname}", data=data_dict)
+        data = await client.post(f"/api/task/send-task/{taskname}", json=data_dict)
         logger.info("Sent task {}", taskname)
         return json.dumps(data)
 

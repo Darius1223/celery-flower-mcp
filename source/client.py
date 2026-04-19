@@ -27,18 +27,29 @@ class FlowerClient:
         logger.debug("GET {} params={}", path, params)
         resp = await self._client.get(path, params=params)
         resp.raise_for_status()
-        return resp.json()
+        if "application/json" in resp.headers.get("content-type", ""):
+            return resp.json()
+        try:
+            return resp.json()
+        except Exception:
+            return resp.text
 
     async def post(
         self,
         path: str,
         params: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None,
     ) -> Any:
-        logger.debug("POST {} params={} data={}", path, params, data)
-        resp = await self._client.post(path, params=params, data=data)
+        logger.debug("POST {} params={} data={} json={}", path, params, data, json)
+        resp = await self._client.post(path, params=params, data=data, json=json)
         resp.raise_for_status()
-        return resp.json()
+        if "application/json" in resp.headers.get("content-type", ""):
+            return resp.json()
+        try:
+            return resp.json()
+        except Exception:
+            return resp.text
 
     async def aclose(self) -> None:
         await self._client.aclose()

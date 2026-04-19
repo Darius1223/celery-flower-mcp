@@ -1,0 +1,45 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+  worker:
+    build:
+      context: tests/integration
+      dockerfile: Dockerfile.worker
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+
+  flower:
+    build:
+      context: tests/integration
+      dockerfile: Dockerfile.flower
+    command: >
+      celery -A celery_app flower
+      --port=5555
+      --broker=redis://redis:6379/0
+      --unauthenticated_api=true
+    ports:
+      - "5555:5555"
+    depends_on:
+      redis:
+        condition: service_healthy
+      worker:
+        condition: service_started
+    environment:
+      FLOWER_UNAUTHENTICATED_API: "true"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5555/healthcheck"]
+      interval: 3s
+      timeout: 5s
+      retries: 20

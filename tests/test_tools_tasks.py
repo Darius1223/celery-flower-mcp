@@ -83,29 +83,29 @@ async def test_get_task_result_with_timeout(registered: FastMCP, mock_client: As
 
 async def test_apply_task_no_args(registered: FastMCP, mock_client: AsyncMock) -> None:
     await run(registered, "apply_task", taskname="my.task")
-    mock_client.post.assert_called_once_with("/api/task/apply/my.task", data={})
+    mock_client.post.assert_called_once_with("/api/task/apply/my.task", json={})
 
 
 async def test_apply_task_with_args(registered: FastMCP, mock_client: AsyncMock) -> None:
     # Pass non-JSON strings to avoid FastMCP pre-parsing
     await run(registered, "apply_task", taskname="my.task", args="1,2", kwargs="x=3")
-    data = mock_client.post.call_args[1]["data"]
-    assert data["args"] == "1,2"
-    assert data["kwargs"] == "x=3"
+    payload = mock_client.post.call_args[1]["json"]
+    assert payload["args"] == "1,2"
+    assert payload["kwargs"] == "x=3"
 
 
 async def test_async_apply_task(registered: FastMCP, mock_client: AsyncMock) -> None:
     mock_client.post.return_value = {"task-id": "xyz"}
     await run(registered, "async_apply_task", taskname="my.task", args="1,2,3")
     mock_client.post.assert_called_once_with(
-        "/api/task/async-apply/my.task", data={"args": "1,2,3"}
+        "/api/task/async-apply/my.task", json={"args": "1,2,3"}
     )
 
 
 async def test_send_task(registered: FastMCP, mock_client: AsyncMock) -> None:
     await run(registered, "send_task", taskname="my.task", kwargs="n=5")
     mock_client.post.assert_called_once_with(
-        "/api/task/send-task/my.task", data={"kwargs": "n=5"}
+        "/api/task/send-task/my.task", json={"kwargs": "n=5"}
     )
 
 
