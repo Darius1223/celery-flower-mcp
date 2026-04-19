@@ -6,7 +6,6 @@
 [![codecov](https://codecov.io/gh/Darius1223/celery-flower-mcp/graph/badge.svg)](https://codecov.io/gh/Darius1223/celery-flower-mcp)
 [![PyPI](https://img.shields.io/pypi/v/celery-flower-mcp.svg)](https://pypi.org/project/celery-flower-mcp/)
 [![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
-[![Smithery](https://smithery.ai/badge/celery-flower-mcp)](https://smithery.ai/server/celery-flower-mcp)
 [![MCP](https://img.shields.io/badge/MCP-compatible-green.svg)](https://modelcontextprotocol.io/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -41,12 +40,6 @@ All 21 Flower API endpoints are covered.
 - **Strict typing** — mypy strict mode, fully annotated
 
 ## Quick Start
-
-### Install via Smithery (recommended)
-
-```bash
-npx @smithery/cli install celery-flower-mcp --client claude
-```
 
 ### Install via uvx
 
